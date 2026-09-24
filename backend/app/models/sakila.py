@@ -1,13 +1,25 @@
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import DateTime, ForeignKey, Integer, Numeric
+from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
     pass
 
+class Film(Base):
+    __tablename__ = "film"
+
+    film_id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True
+    )
+
+    title: Mapped[str] = mapped_column(
+        String(128),
+        nullable=False
+    )
 
 class Inventory(Base):
     __tablename__ = "inventory"
@@ -17,6 +29,11 @@ class Inventory(Base):
         primary_key=True
     )
 
+    film_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("film.film_id"),
+        nullable=False
+    )
 
 class Rental(Base):
     __tablename__ = "rental"
