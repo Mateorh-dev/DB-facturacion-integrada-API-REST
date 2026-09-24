@@ -27,3 +27,10 @@ deactivate
 ```cmd
 pip install -r requirements.txt
 ```
+
+---
+
+# Ejecutar
+```cmd
+uvicorn api:app --reload
+```

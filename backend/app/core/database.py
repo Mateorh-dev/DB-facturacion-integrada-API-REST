@@ -46,8 +46,8 @@ class Database:
             autocommit=False,
         )
 
+if __name__ == "__main__":
+    database = Database()
 
-database = Database()
-
-engine = database.engine
-SessionLocal = database.SessionLocal
+    engine = database.engine
+    SessionLocal = database.SessionLocal
