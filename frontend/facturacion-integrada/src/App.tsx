@@ -1,13 +1,36 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field"
-import { CurrencyDollarIcon, PopcornIcon, UserIcon } from "@phosphor-icons/react"
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./components/ui/input-group"
-import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
-import { Button } from "@/components/ui/button"
+
+import { CurrencyDollarIcon, PopcornIcon, UserIcon } from "@phosphor-icons/react"
+
+import { useEffect, useState } from "react"
+
+import api from "@/api/configAxios"
 
 function App() {
+
+  const [catalogo, setCatalogo] = useState<any[]>([]);
+
+  const getCatalogo = async () => {
+    try {
+      const request = await api.get('api/titles_inventory');
+      setCatalogo(request.data);
+      console.log(request.data)
+    }
+    catch (error) {
+      setCatalogo([]);
+    }
+  }
+
+  useEffect (()=>{
+    getCatalogo()
+  }, []
+  );
 
   return (
     <>
@@ -23,7 +46,7 @@ function App() {
       </CardHeader>
       <CardContent>
         <FieldSet>
-          <FieldGroup className="grid grid-cols-4 gap-4">
+          <FieldGroup className="grid grid-cols-2 gap-4">
             <Field>
               <FieldLabel>
                 <Badge><UserIcon></UserIcon></Badge>
@@ -55,19 +78,26 @@ function App() {
                 <Badge><PopcornIcon></PopcornIcon></Badge>
                 Película
               </FieldLabel>
-              <Combobox items={["a","b","c"]}>
-                <ComboboxInput></ComboboxInput>
-                <ComboboxContent>
-                  <ComboboxEmpty>No encontrada</ComboboxEmpty>
-                  <ComboboxList>
-                    {
-                      (item) => (
-                        <ComboboxItem>{item}</ComboboxItem>
-                      )
-                    }
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
+                <Combobox 
+                items={catalogo}
+                >
+                  <ComboboxInput placeholder={(catalogo.length === 0) ? "Cargando..." : "Seleccione"}>
+                  </ComboboxInput>
+                  <ComboboxContent>
+                    <ComboboxEmpty>No encontrada</ComboboxEmpty>
+                    <ComboboxList>
+                      {
+                        (item) => (
+                          <ComboboxItem 
+                          key={item.inventory_id}
+                          value={item.title}>
+                            {item.title}
+                          </ComboboxItem>
+                        )
+                      }
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
             </Field>
 
             <Field>
