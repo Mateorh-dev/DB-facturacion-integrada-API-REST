@@ -1,9 +1,11 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from sqlalchemy import select
+from datetime import datetime
 
 from app.core.database import Database
-from app.models.sakila import Inventory, Film
+from app.models.sakila import Inventory, Film, Rental, Payment
 
 app = FastAPI()
 router_url = APIRouter(prefix="/api")
@@ -22,9 +24,56 @@ db = Database()
 async def server_up():
     return {"mensaje":"Servicio de API activo"}
 
+
+class DataCheckout(BaseModel):
+    inventory_id: int
+    customer_id: int
+    staff_id: int
+    amount: int
+
 @router_url.post("/checkout", tags=["Alquiler peliculas"])
-async def checkout():
-    pass
+async def checkout(data: DataCheckout):
+    session = db.SessionLocal()
+    try:
+        registrar_rental = Rental(
+            rental_date = datetime.now(),
+            inventory_id = data.inventory_id,
+            customer_id = data.customer_id,
+            staff_id = data.staff_id,
+        )
+
+        session.add(registrar_rental)
+        session.flush()
+
+        registrar_payment = Payment(
+            customer_id = data.customer_id,
+            staff_id = data.staff_id,
+            rental_id = registrar_rental.rental_id,
+            amount = data.amount,
+            payment_date = datetime.now(),
+        )
+
+        session.add(registrar_payment)
+        session.commit()
+    except:
+        session.rollback()
+        return {
+            "status":"error",
+            "message":"Transaccion declinada"
+            }
+    finally:
+        session.close()
+
+# stmt = text("""
+#     SELECT *
+#     FROM clientes
+#     WHERE nombre = :nombre
+# """)
+
+# result = db.execute(
+#     stmt,
+#     {"nombre": nombre}
+# )
 
 @router_url.get("/titles_inventory", tags=["Inventario"])
 async def titles_inventory():

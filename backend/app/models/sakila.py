@@ -72,7 +72,6 @@ class Rental(Base):
         nullable=False
     )
 
-
 class Payment(Base):
     __tablename__ = "payment"
 
