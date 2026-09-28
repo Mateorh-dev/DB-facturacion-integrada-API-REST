@@ -108,3 +108,19 @@ class Payment(Base):
         DateTime,
         nullable=False
     )
+
+class Film(Base):
+    __tablename__ = "staff"
+
+    staff_id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True
+    )
+
+class Film(Base):
+    __tablename__ = "customer"
+
+    customer_id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True
+    )
